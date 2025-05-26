@@ -1,8 +1,12 @@
 # Cityscapes Importance Label Generator
 
-이 프로젝트는 Cityscapes 데이터셋에서 주어진 **disparity 맵**과 **semantic segmentation label**, 그리고 **ego-vehicle speed, camera calibration 정보**를 바탕으로 \*\*중요도 맵 (importance map)\*\*을 생성합니다.
+이 프로젝트는 Cityscapes 데이터셋에서 주어진 **disparity 맵**, **semantic segmentation label**,  
+그리고 **ego-vehicle speed**, **camera calibration 정보**를 바탕으로  
+**픽셀 단위의 중요도 맵 (importance map)** 을 생성합니다.
 
-중요도 맵은 픽셀 단위로 0\~1 사이의 soft label을 갖고, 가까운 차량/보행자와 같은 중요 객체는 1에 가까운 값을, 배경이나 멀리 있는 객체는 낮은 값을 갖습니다.
+중요도 맵은 0~1 사이의 soft label 값을 갖습니다.  
+가까운 차량·보행자와 같은 중요 객체는 1.0에 가까운 값을,  
+멀리 있는 배경이나 무시 가능한 객체는 0.0에 가까운 값을 부여받습니다.
 
 ---
 
@@ -10,11 +14,11 @@
 
 ```
 cityscapes_trainval/
-├── gtFine/val/<city>/*_gtFine_labelIds.png         # semantic 라벨
-├── disparity/val/<city>/*_disparity.png            # stereo disparity (16-bit)
-├── vehicle/val/<city>/*_vehicle.json               # 속도 정보 ("speed")
-├── camera/val/<city>/*_camera.json                 # fx, baseline 등 camera 파라미터
-├── gtFine/val/<city>/*_gtFine_polygons.json        # 폴리곤 객체 위치 정보 (시각화용)
+├── gtFine/val/<city>/_gtFine_labelIds.png # semantic 라벨 ID 이미지
+├── disparity/val/<city>/_disparity.png # stereo disparity (16-bit PNG)
+├── vehicle/val/<city>/_vehicle.json # 차량 속도 정보 ("speed" 키 사용)
+├── camera/val/<city>/_camera.json # fx, baseline 등 camera 보정 파라미터
+├── gtFine/val/<city>/*_gtFine_polygons.json # 객체 위치 polygon (시각화용)
 ```
 
 ---
@@ -27,9 +31,9 @@ cityscapes_trainval/
    * `camera.json` → `fx`, `baseline`
    * 안전 거리 계산:
 
-```
+```text
 d_safe = v * t_react + v^2 / (2 * a)
-기본값: t_react = 2.5 sec, a = 3.4 m/s^2
+기본값: t_react = 2.5 sec, a = 3.4 m/s²
 ```
 
 2. **Disparity → 거리 변환**
@@ -44,11 +48,12 @@ distance = (fx * baseline) / disparity
 * 동적 객체 (`car`, `person`, `bicycle`, ...): 거리 기반 감쇠 함수 적용
 
 ```
-I(d) =
-  1.0                        if d <= d_safe
-  exp(-β * (d - d_safe))    if d > d_safe
+중요도 함수 I(d):
 
-  where β = ln(2) / d_safe  # 거리 2배가 되면 중요도 반감
+    I(d) = 1.0                            if d <= d_safe
+           exp(-β * (d - d_safe))        if d > d_safe
+
+    where β = ln(2) / d_safe    # 거리 2배가 되면 중요도 반감
 ```
 
 4. **중요도 맵 저장**
