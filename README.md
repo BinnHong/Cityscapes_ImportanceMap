@@ -92,6 +92,39 @@ for city in selected_cities:
 
 ---
 
+## 📤 출력 예시 및 시각화
+이 프로젝트는 각 프레임에 대해 다음과 같은 시각화 파일을 생성합니다:
+
+항목	설명
+*_importance.npy	float32 배열, 픽셀 단위 중요도 (0.0~1.0)
+*_importance.png	정규화된 grayscale 중요도 이미지
+*_importance_vis.png	컬러맵 기반 중요도 시각화 (hot colormap)
+*_distance_annotation.png	객체별 거리 및 안전거리 주석 시각화 (Red/Blue 폴리곤)
+
+---
+
+🖼️ 시각화 예시
+🟦 안전거리 바깥 → 낮은 중요도
+🟥 안전거리 안쪽 → 높은 중요도
+
+cologne_000090_000019
+| 항목              | 이미지                                                                 |
+| --------------- | ------------------------------------------------------------------- |
+| 원본 이미지          | ![leftImg8bit](assets/cologne_000090_000019_leftImg8bit.png)        |
+| 중요도 (grayscale) | ![importance](assets/cologne_000090_000019_importance.png)          |
+| 중요도 (컬러맵)       | ![importance\_vis](assets/cologne_000090_000019_importance_vis.png) |
+| 거리 + 주석 시각화     | ![distance](assets/cologne_000090_000019_distance_annotation.png)   |
+
+frankfurt_000000_000294
+| 항목              | 이미지                                                                   |
+| --------------- | --------------------------------------------------------------------- |
+| 원본 이미지          | ![leftImg8bit](assets/frankfurt_000000_000294_leftImg8bit.png)        |
+| 중요도 (grayscale) | ![importance](assets/frankfurt_000000_000294_importance.png)          |
+| 중요도 (컬러맵)       | ![importance\_vis](assets/frankfurt_000000_000294_importance_vis.png) |
+| 거리 + 주석 시각화     | ![distance](assets/frankfurt_000000_000294_distance_annotation.png)   |
+
+---
+
 ## 📚 참고
 
 * [Cityscapes Dataset](https://www.cityscapes-dataset.com/)
