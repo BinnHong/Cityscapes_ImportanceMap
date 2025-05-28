@@ -138,6 +138,81 @@ frankfurt_000000_000294
 
 ---
 
+## 📊 QP 맵 생성기 (QP Map Generator)
+
+이 모듈은 생성된 **중요도 맵 (`*.npy`)을 기반으로**, **비디오 인코딩을 위한 QP (Quantization Parameter) 맵을 생성**합니다.  
+HEVC/H.264 기반 압축에서 객체 인식 성능을 유지하면서 **중요 영역에 더 많은 비트를 할당하기 위한 사전처리 과정**입니다.
+
+---
+
+### ⚙️ 처리 방식 요약
+
+1. `importance_map.npy` 파일 로딩 (float32, 0.0~1.0)
+2. 블록 단위(`block_size`)로 평균 중요도 계산
+3. 중요도가 높을수록 낮은 QP 부여 (화질 유지)
+4. 전체 QP 분포는 다음 범위로 설정:
+
+```
+QP ∈ [base_qp - delta, base_qp + delta]
+예: base_qp = 32, delta = 3 → [29, 35]
+```
+
+5. 결과는 CSV 및 시각화 이미지로 저장
+
+---
+
+### 🧪 사용 예시
+
+```python
+from qp_map_generator import generate_qp_map_csv
+
+generate_qp_map_csv(
+    importance_map_path='output/cologne_000090_000019_importance.npy',
+    output_csv_path='output/cologne_000090_000019_qp_map.csv',
+    block_size=16,
+    base_qp=32,
+    delta=3
+)
+```
+
+---
+
+### 🖼️ 시각화 예시
+
+- QP 맵은 `viridis` colormap으로 표시됨
+- QP 값이 낮을수록 (화질 높음) → **파란색**
+- QP 값이 높을수록 (압축률 높음) → **노란색**
+
+| 항목              | 이미지 예시                                          |
+| ----------------- | --------------------------------------------------- |
+| QP 맵 컬러 시각화    | ![qpmap](assets/cologne_000090_000019_qp_map_vis.png) |
+
+---
+
+### 📤 출력 파일 예시
+
+| 파일명                            | 설명                                       |
+| --------------------------------- | ------------------------------------------ |
+| `*_qp_map.csv`                    | 블록 단위 QP 값을 저장한 CSV 파일               |
+| `*_qp_map_vis.png` (선택적)       | 시각화용 컬러맵 이미지                         |
+
+---
+
+### ⚠️ 주의사항
+
+- 입력 `.npy` 파일의 크기는 원본 이미지 해상도와 일치해야 하며, `block_size`는 이를 정수로 나눌 수 있어야 합니다.
+- `delta` 값을 조정하면 QP 분포 폭을 더 넓게 할 수 있습니다.
+- `gamma` 조절 등을 통해 중요도 분포 강조(비선형 스케일링)도 가능합니다.
+
+---
+
+### 🔗 활용 예
+
+- 중요 영역 우선 압축 → FFmpeg `--zones`로 연동 가능
+- Cityscapes 압축 실험, detection-aware encoding 등에 응용 가능
+
+---
+
 ## 🎯 활용 가능성
 
 * 중요도 기반 비디오 압축 (중요 영역 고품질 유지)
