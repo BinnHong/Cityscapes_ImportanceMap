@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
-
+import os
+'''
 def generate_qp_map_csv(importance_map_path, output_csv_path='qp_map.csv',
                          block_size=16, base_qp=32, delta=3):
     """
@@ -34,11 +35,11 @@ def generate_qp_map_csv(importance_map_path, output_csv_path='qp_map.csv',
     print(f"QP 맵이 CSV로 저장되었습니다: {output_csv_path}")
 
     return qp_map
-
+'''
 import matplotlib.pyplot as plt
 
 def generate_qp_map_csv_viz(importance_map_path, output_csv_path='qp_map.csv',
-                         block_size=16, base_qp=36, delta=24, show_plot=True):
+                         block_size=16, base_qp=30, delta=15, show_plot=True):
     """
     importance_map.npy → QP map 생성 후 CSV 저장 + 시각화
     """
@@ -84,5 +85,7 @@ def generate_qp_map_csv_viz(importance_map_path, output_csv_path='qp_map.csv',
 
 # 실행 예시
 if __name__ == '__main__':
-    generate_qp_map_csv_viz('C:/Users/ghdql/Desktop/tmp/새 폴더 (4)/cologne_000090_000019_importance.npy', 'qp_map.csv')
+    foler_path = 'C:/Users/ghdql/Desktop/tmp/새 폴더 (7)/'
+    file_name = 'frankfurt_000000_000294'
+    generate_qp_map_csv_viz(foler_path + file_name + '_importance.npy', foler_path + file_name + '_qp_map.csv')
 
